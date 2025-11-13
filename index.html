@@ -124,6 +124,22 @@
     <!-- Back to Top -->
     <a href="#" class="btn btn-outline-primary border-2 btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
 
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header border-bottom border-primary">
+                    <h5 class="modal-title text-primary" id="successModalLabel"><i class="fa-solid fa-check-circle me-2"></i>¡Mensaje Enviado!</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¡Gracias por contactarnos! Tu mensaje ha sido recibido con éxito. Nos pondremos en contacto contigo lo antes posible.</p>
+                </div>
+                <div class="modal-footer border-top border-primary">
+                    <button type="button" class="btn btn-outline-primary border-2" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
@@ -188,44 +204,33 @@
         // Cargar home.html cuando el documento esté listo
         document.addEventListener('DOMContentLoaded', function () {
             loadPage(null, "views/home.html");
-        });
 
-    </script>
-
-    <script>
-        /**
-* Función que inicializa la lógica del formulario de contacto (incluyendo la validación
-* y la notificación Toast), diseñada para ser llamada después de cargar el HTML con fetch.
-*/
-        function initializeContactForm() {
-            // 1. Obtener el formulario y el toast por sus IDs
-            const contactForm = document.getElementById('contactForm');
-            const contactToast = document.getElementById('contactToast');
-
-            // 2. Verificar que ambos elementos existan en el DOM antes de añadir el listener
-            if (contactForm && contactToast) {
-                // 3. Añadir el 'event listener' para el evento 'submit'
-                contactForm.addEventListener('submit', function (event) {
-
-                    // La validación nativa 'required' de HTML5 se encargará de detener el submit 
-                    // si hay campos vacíos. Si pasa la validación, este código se ejecuta:
-
-                    // 4. Prevenir el envío estándar del formulario (para evitar recarga de página)
+            document.addEventListener('submit', function(event) {
+                // Verifica si el evento proviene del formulario de contacto
+                if (event.target.id === 'contactForm') {
+                    // 1. PREVIENE LA ACCIÓN POR DEFECTO
                     event.preventDefault();
 
-                    // 5. [AQUÍ VA TU LÓGICA DE FETCH/AJAX para enviar el formulario al servidor]
-                    // Por ejemplo: sendFormData(contactForm);
-
-                    // 6. Simular el envío exitoso y mostrar el Toast
-                    const toast = new bootstrap.Toast(contactToast);
-                    toast.show();
-
-                    // 7. Limpiar el formulario después del envío exitoso
-                    contactForm.reset();
-                });
-            }
-        }
-        // NOTA: No llames a initializeContactForm() aquí. Se llama en el siguiente paso.
+                    // 2. Muestra el modal de Bootstrap
+                    const successModalElement = document.getElementById('successModal');
+                    
+                    // Doble verificación: ¿Existe el elemento del modal y la librería Bootstrap?
+                    if (successModalElement && window.bootstrap && bootstrap.Modal) {
+                        try {
+                            const modal = new bootstrap.Modal(successModalElement);
+                            modal.show();
+                            
+                            // 3. Limpia el formulario
+                            event.target.reset();
+                        } catch(e) {
+                            console.error('Error al intentar mostrar el modal de Bootstrap:', e);
+                        }
+                    } else {
+                        console.error('Modal o Bootstrap no disponibles al intentar enviar el formulario.');
+                    }
+                }
+            });
+        });
     </script>
 
 </body>
