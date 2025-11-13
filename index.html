@@ -141,6 +141,23 @@
         </div>
     </div>
 
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header border-bottom border-primary">
+                    <h5 class="modal-title text-primary" id="registerModalLabel"><i class="fa-solid fa-envelope-open-text me-2"></i>¡Registro Exitoso!</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¡Gracias por registrarte para las pruebas! Hemos enviado un correo electrónico a la dirección proporcionada con todos los detalles sobre fechas, requisitos y próximos pasos.</p>
+                </div>
+                <div class="modal-footer border-top border-primary">
+                    <button type="button" class="btn btn-outline-primary border-2" data-bs-dismiss="modal">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -206,30 +223,43 @@
             loadPage(null, "views/home.html");
 
             document.addEventListener('submit', function(event) {
-                // Verifica si el evento proviene del formulario de contacto
-                if (event.target.id === 'contactForm') {
-                    // 1. PREVIENE LA ACCIÓN POR DEFECTO
-                    event.preventDefault();
+                const formId = event.target.id;
+                
+                // Si el formulario no es el de contacto NI el de registro, salimos.
+                if (formId !== 'contactForm' && formId !== 'trialRegisterForm') {
+                    return;
+                }
+                
+                // 1. PREVIENE LA ACCIÓN POR DEFECTO para ambos
+                event.preventDefault();
 
-                    // 2. Muestra el modal de Bootstrap
-                    const successModalElement = document.getElementById('successModal');
-                    
-                    // Doble verificación: ¿Existe el elemento del modal y la librería Bootstrap?
-                    if (successModalElement && window.bootstrap && bootstrap.Modal) {
-                        try {
-                            const modal = new bootstrap.Modal(successModalElement);
-                            modal.show();
-                            
-                            // 3. Limpia el formulario
-                            event.target.reset();
-                        } catch(e) {
-                            console.error('Error al intentar mostrar el modal de Bootstrap:', e);
-                        }
-                    } else {
-                        console.error('Modal o Bootstrap no disponibles al intentar enviar el formulario.');
+                // Determina qué modal mostrar y qué elemento obtener
+                let modalId = '';
+                if (formId === 'contactForm') {
+                    modalId = 'successModal';
+                } else if (formId === 'trialRegisterForm') {
+                    modalId = 'registerModal';
+                }
+
+                // 2. Muestra el modal de Bootstrap
+                const modalElement = document.getElementById(modalId);
+                
+                if (modalElement && window.bootstrap && bootstrap.Modal) {
+                    try {
+                        // Usamos new bootstrap.Modal() para compatibilidad con la versión 5.0.0
+                        const modal = new bootstrap.Modal(modalElement);
+                        modal.show();
+
+                        // 3. Limpia el formulario
+                        event.target.reset();
+                    } catch(e) {
+                        console.error('Error al intentar mostrar el modal de Bootstrap:', e);
                     }
+                } else {
+                    console.error('Modal o Bootstrap no disponibles al intentar enviar el formulario.');
                 }
             });
+            
         });
     </script>
 
