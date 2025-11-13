@@ -34,8 +34,14 @@
     <link href="public/template/Poseify-1.0.0/css/style.css" rel="stylesheet">
     <style>
         /* Hacer un fade-in suave cuando el contenido dinámico esté listo */
-        #main-content{ opacity: 0; transition: opacity 350ms ease-in-out; }
-        #main-content.loaded{ opacity: 1; }
+        #main-content {
+            opacity: 0;
+            transition: opacity 350ms ease-in-out;
+        }
+
+        #main-content.loaded {
+            opacity: 1;
+        }
     </style>
 </head>
 
@@ -65,10 +71,12 @@
                                 <a href="views/404.html" class="dropdown-item" onclick="loadPage(event, this.href)">404</a>
                             </div>
                         </div>
-                        <a href="public/template/Poseify-1.0.0/contact.html" class="nav-item nav-link" onclick="loadPage(event, this.href)">Contactos</a>
+                        <a href="views/contact.html" class="nav-item nav-link"
+                            onclick="loadPage(event, this.href)">Contactos</a>
                     </div>
                     <div class="d-none d-lg-flex">
-                        <a class="btn btn-outline-primary border-2" href="https://themewagon.com/themes/poseify">Download Now</a>
+                        <a class="btn btn-outline-primary border-2"
+                            href="https://themewagon.com/themes/poseify">Download Now</a>
                     </div>
                 </div>
             </nav>
@@ -79,7 +87,7 @@
 
     <!-- Main Start -->
     <main id="main-content">
-            
+
     </main>
     <!-- Main End -->
 
@@ -131,7 +139,7 @@
 
     <script>
         // Pre-carga todas las imágenes que aparecen dentro del HTML externo
-        function preloadImagesFromHtml(html){
+        function preloadImagesFromHtml(html) {
             const tmp = document.createElement('div');
             tmp.innerHTML = html;
             const imgEls = Array.from(tmp.querySelectorAll('img'));
@@ -144,45 +152,82 @@
             return Promise.all(loads).then(() => html);
         }
 
-        function loadPage(event, url){
-            if(event && event.preventDefault) event.preventDefault();
+        function loadPage(event, url) {
+            if (event && event.preventDefault) event.preventDefault();
 
             const main = document.getElementById('main-content');
-            if(main) main.classList.remove('loaded');
+            if (main) main.classList.remove('loaded');
 
             fetch(url)
-            .then(response => response.text()) // obtener HTML
-            .then(html => preloadImagesFromHtml(html)) // esperar imágenes
-            .then(html => {
-                main.innerHTML = html; // insertar contenido cuando todo esté listo
+                .then(response => response.text()) // obtener HTML
+                .then(html => preloadImagesFromHtml(html)) // esperar imágenes
+                .then(html => {
+                    main.innerHTML = html; // insertar contenido cuando todo esté listo
 
-                // Re-inicializar animaciones dinámicas si están presentes
-                try{ if(window.WOW) new WOW().init(); }catch(e){}
+                    // Re-inicializar animaciones dinámicas si están presentes
+                    try { if (window.WOW) new WOW().init(); } catch (e) { }
 
-                // Inicializar carousel de bootstrap si existe
-                try{
-                    const el = document.querySelector('#header-carousel');
-                    if(el && window.bootstrap && bootstrap.Carousel){
-                        // eslint-disable-next-line no-new
-                        new bootstrap.Carousel(el);
-                    }
-                }catch(e){}
+                    // Inicializar carousel de bootstrap si existe
+                    try {
+                        const el = document.querySelector('#header-carousel');
+                        if (el && window.bootstrap && bootstrap.Carousel) {
+                            // eslint-disable-next-line no-new
+                            new bootstrap.Carousel(el);
+                        }
+                    } catch (e) { }
 
-                // Aplicar fade-in
-                requestAnimationFrame(() => main.classList.add('loaded'));
-            })
-            .catch(err => {
-                main.innerHTML = '<pre style="color: red;">'+err+'</pre>';
-                if(main) main.classList.add('loaded');
-            });
+                    // Aplicar fade-in
+                    requestAnimationFrame(() => main.classList.add('loaded'));
+                })
+                .catch(err => {
+                    main.innerHTML = '<pre style="color: red;">' + err + '</pre>';
+                    if (main) main.classList.add('loaded');
+                });
         }
 
         // Cargar home.html cuando el documento esté listo
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             loadPage(null, "views/home.html");
         });
 
     </script>
+
+    <script>
+        /**
+* Función que inicializa la lógica del formulario de contacto (incluyendo la validación
+* y la notificación Toast), diseñada para ser llamada después de cargar el HTML con fetch.
+*/
+        function initializeContactForm() {
+            // 1. Obtener el formulario y el toast por sus IDs
+            const contactForm = document.getElementById('contactForm');
+            const contactToast = document.getElementById('contactToast');
+
+            // 2. Verificar que ambos elementos existan en el DOM antes de añadir el listener
+            if (contactForm && contactToast) {
+                // 3. Añadir el 'event listener' para el evento 'submit'
+                contactForm.addEventListener('submit', function (event) {
+
+                    // La validación nativa 'required' de HTML5 se encargará de detener el submit 
+                    // si hay campos vacíos. Si pasa la validación, este código se ejecuta:
+
+                    // 4. Prevenir el envío estándar del formulario (para evitar recarga de página)
+                    event.preventDefault();
+
+                    // 5. [AQUÍ VA TU LÓGICA DE FETCH/AJAX para enviar el formulario al servidor]
+                    // Por ejemplo: sendFormData(contactForm);
+
+                    // 6. Simular el envío exitoso y mostrar el Toast
+                    const toast = new bootstrap.Toast(contactToast);
+                    toast.show();
+
+                    // 7. Limpiar el formulario después del envío exitoso
+                    contactForm.reset();
+                });
+            }
+        }
+        // NOTA: No llames a initializeContactForm() aquí. Se llama en el siguiente paso.
+    </script>
+
 </body>
 
 </html>
