@@ -425,3 +425,8 @@
     height: 100%;
     object-fit: cover; 
 }
+
+/* Override modal title color to match requested purple */
+.modal-title {
+    color: #fa09be !important;
+}
